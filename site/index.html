@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JLPT Team Kanji Challenge</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <main class="quiz-container">
+        <header class="quiz-header">
+            <h1>&#x2B50; JLPT Team Kanji Challenge &#x2B50;</h1>
+        </header>
+
+        <section id="quiz">
+            <div class="quiz-info">
+                <span id="question-counter"></span>
+                <span id="score"></span>
+            </div>
+
+            <div class="progress-bar">
+                <div id="progress" class="progress"></div>
+            </div>
+
+            <div id="context" class="context"></div>
+            <h2 id="question" class="question"></h2>
+            <div id="answers" class="answers"></div>
+            <p id="feedback" class="feedback" aria-live="polite"></p>
+
+            <button id="next-btn" class="next-btn" disabled></button>
+        </section>
+
+        <section id="results" class="results hidden">
+            <h2>Quiz terminé</h2>
+            <p id="final-score"></p>
+            <p id="result-message"></p>
+            <button id="restart-btn" class="restart-btn">Recommencer</button>
+        </section>
+    </main>
+
+    <script type="module" src="js/script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,400 @@
+/* ------------------------------------
+   Variables
+   ------------------------------------
+   --context-lines / --question-lines : nombre de lignes RÉSERVÉES.
+   Si le texte est plus court, l'espace reste identique => rien ne saute.
+   Augmentez la valeur si certaines questions dépassent encore.
+*/
+:root {
+    --accent: #667eea;
+    --accent-dark: #5366d5;
+    --lh: 1.5;
+
+    --context-lines: 2;
+    --context-pad: 16px;
+    --question-lines: 2;
+    --feedback-lines: 2;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+body {
+    font-family: Arial, "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+    background: #e5a0aa;
+    background: radial-gradient(circle at top,
+            #f8e0e3 0%,
+            #edbbc2 35%,
+            #e5a0aa 70%,
+            #d98794 100%);
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Marges + zones sûres (encoche / barre d'accueil iPhone) */
+    padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+}
+
+.quiz-container {
+    background: white;
+    width: 100%;
+    max-width: 600px;
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* ------------------------------------
+   En-tête
+   ------------------------------------ */
+.quiz-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.quiz-header h1 {
+    color: #333;
+    font-size: 28px;
+    line-height: 1.25;
+    margin-bottom: 8px;
+    text-wrap: balance;
+}
+
+/* ------------------------------------
+   Infos + progression
+   ------------------------------------ */
+.quiz-info {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.3;
+    margin-bottom: 12px;
+    /* hauteur stable même si le texte change */
+    min-height: 1.3em;
+}
+
+.progress-bar {
+    height: 8px;
+    background: #eee;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+.progress {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    transition: width 0.3s ease;
+}
+
+/* ------------------------------------
+   Contexte (hauteur réservée)
+   ------------------------------------ */
+.context {
+    background: #f3f5ff;
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: var(--context-pad) 18px;
+    margin-bottom: 22px;
+    color: #555;
+    font-size: 17px;
+    line-height: var(--lh);
+    min-height: calc(var(--context-lines) * 1em * var(--lh) + 2 * var(--context-pad));
+    overflow-wrap: break-word;
+}
+
+/* Pas de contexte : on garde la place mais on cache le cadre */
+.context:empty {
+    visibility: hidden;
+}
+
+/* ------------------------------------
+   Question (hauteur réservée)
+   ------------------------------------ */
+.question {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 25px;
+    line-height: var(--lh);
+    min-height: calc(var(--question-lines) * 1em * var(--lh));
+    overflow-wrap: break-word;
+}
+
+/* ------------------------------------
+   Réponses
+   ------------------------------------ */
+.answers {
+    display: grid;
+    grid-template-columns: 1fr;
+    /* toutes les réponses ont la hauteur de la plus grande */
+    grid-auto-rows: 1fr;
+    gap: 12px;
+}
+
+.answer-btn {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    min-height: 56px;
+    padding: 14px 16px;
+    border: 2px solid #e5e5e5;
+    border-radius: 10px;
+    background: white;
+    color: #333;
+    font: inherit;
+    font-size: 18px;
+    line-height: 1.35;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    overflow-wrap: break-word;
+}
+
+/* Le survol n'existe que sur desktop (évite le hover "collé" sur iPhone) */
+@media (hover: hover) {
+    .answer-btn:hover:not(:disabled) {
+        border-color: var(--accent);
+        background: #f5f6ff;
+    }
+}
+
+.answer-btn:active:not(:disabled) {
+    border-color: var(--accent);
+    background: #f5f6ff;
+}
+
+.answer-btn:focus-visible,
+.next-btn:focus-visible,
+.restart-btn:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.answer-btn:disabled {
+    cursor: default;
+}
+
+.answer-btn.correct {
+    background: #d4edda;
+    border-color: #28a745;
+    color: #155724;
+}
+
+.answer-btn.incorrect {
+    background: #f8d7da;
+    border-color: #dc3545;
+    color: #721c24;
+}
+
+/* ------------------------------------
+   Feedback (hauteur réservée)
+   ------------------------------------ */
+.feedback {
+    margin-top: 18px;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 1.4;
+    min-height: calc(var(--feedback-lines) * 1em * 1.4);
+    overflow-wrap: break-word;
+}
+
+.feedback.success {
+    color: #28a745;
+}
+
+.feedback.error {
+    color: #dc3545;
+}
+
+/* ------------------------------------
+   Boutons
+   ------------------------------------ */
+.next-btn,
+.restart-btn {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    min-height: 52px;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    background: var(--accent);
+    color: white;
+    font: inherit;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background 0.2s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: hover) {
+
+    .next-btn:hover:not(:disabled),
+    .restart-btn:hover {
+        background: var(--accent-dark);
+    }
+}
+
+.next-btn:active:not(:disabled),
+.restart-btn:active {
+    background: var(--accent-dark);
+}
+
+.next-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* ------------------------------------
+   Résultats
+   ------------------------------------ */
+.results {
+    text-align: center;
+}
+
+.results h2 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.results p {
+    color: #666;
+    margin: 12px 0;
+    font-size: 17px;
+    line-height: 1.5;
+}
+
+.hidden {
+    display: none;
+}
+
+/* ------------------------------------
+   Reset
+   ------------------------------------ */
+
+.reset-btn {
+    -webkit-appearance: none;
+    appearance: none;
+    min-height: 52px;
+    padding: 30px;
+    border-radius: 10px;
+    background: #dc3545;
+    border-color: #721c24;
+    color: #ffffff;
+    font: inherit;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background 0.2s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.reset-btn:active {
+    background: #bc1525;
+}
+
+/* ------------------------------------
+   Smartphone (iPhone 12 mini = 375 px de large)
+   Objectif : tout tient dans l'écran visible, sans défiler.
+   ------------------------------------ */
+@media (max-width: 480px) {
+    :root {
+        --lh: 1.4;
+        --context-lines: 2;
+        --context-pad: 10px;
+        --question-lines: 2;
+    }
+
+    body {
+        align-items: flex-start;
+        padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+    }
+
+    .quiz-container {
+        padding: 14px;
+        border-radius: 16px;
+    }
+
+    .quiz-header {
+        margin-bottom: 24px;
+    }
+
+    /* Titre sur une seule ligne, taille proportionnelle à l'écran */
+    .quiz-header h1 {
+        font-size: clamp(13px, 5.5vw, 21px);
+        white-space: nowrap;
+        margin-bottom: 0;
+    }
+
+    .quiz-info {
+        font-size: 13px;
+        margin-bottom: 8px;
+    }
+
+    .progress-bar {
+        margin-bottom: 24px;
+    }
+
+    .context {
+        padding-left: 12px;
+        padding-right: 12px;
+        margin-bottom: 10px;
+    }
+
+    .question {
+        margin-bottom: 24px;
+    }
+
+    .answers {
+        gap: 10px;
+    }
+
+    .answer-btn {
+        min-height: 52px;
+        padding: 10px 14px;
+    }
+
+    .feedback {
+        margin-top: 12px;
+        line-height: 1.3;
+        min-height: calc(var(--feedback-lines) * 1em * 1.3);
+    }
+
+    .next-btn {
+        min-height: 50px;
+        padding: 13px;
+        margin-top: 8px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .progress,
+    .answer-btn,
+    .next-btn,
+    .restart-btn {
+        transition: none;
+    }
+}
